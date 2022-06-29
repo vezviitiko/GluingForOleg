@@ -2,6 +2,7 @@
 # пути и переменные
 path1 = 'C:\\Users\\vezvi\\PycharmProjects\\ProjectOleg\\Test_folder'
 path2 = 'C:\\Users\\vezvi\\PycharmProjects\\ProjectOleg\\Test_folder_copy'
+path3 = 'C:\\Users\\vezvi\\PycharmProjects\\ProjectOleg\\Test_folder_brdc'
 
 # проверка в директории файлов и копирование в другую директорию
 import os
@@ -45,13 +46,19 @@ print(fileExt)
 # подключение к БД
 cnx = connect_to_db()
 
-# получение словаря весов станций
-station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime)
+#for n_sys in [1,2,3,4]:
+for n_sys in [2]:
+    # получение словаря весов станций
+    station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime, n_sys)
 
-# чтение файлов
-list_files = creat_selection_file(path2, station_heft_dict)
+    # чтение файлов
+    list_files = creat_selection_file(path2, station_heft_dict, n_sys)
 
-# сравнение данных
-list_check_data = check_data_files(list_files)
+    # сравнение данных
+    list_check_data = check_data_files(list_files)
+
+    # создание нав.файла
+    creat_nav_file(list_check_data, path3, n_sys, year, day_year)
+
 
 

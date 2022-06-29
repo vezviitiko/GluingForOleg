@@ -9,6 +9,7 @@ import os.path
 from function import *
 from db_connect import *
 from db_function import *
+from read_file import *
 
 # список расширений для проверки
 # генерация расширения вместе с требуемой датой
@@ -27,7 +28,7 @@ str_datetime = str(year) + '-' + str(month) + '-' + str(day)
 print(str_datetime)
 fileExt = ( 'EN.rnx.gz','RN.rnx.gz','CN.rnx.gz','MN.rnx.gz','GN.rnx.gz')
 print(fileExt)
-copy_ver_file(path1, path2, fileExt,str_datetime_dy)
+#copy_ver_file(path1, path2, fileExt,str_datetime_dy)
 
 # разархивирование
 #print('unpacking_file----')
@@ -40,14 +41,17 @@ copy_ver_file(path1, path2, fileExt,str_datetime_dy)
 # открываем каждый файл и
 #
 # создаем список весов по списку скачанных файлов
+
 # подключение к БД
 cnx = connect_to_db()
+
 # получение словаря весов станций
 station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime)
 
+# чтение файлов
+list_files = creat_selection_file(path2, station_heft_dict)
 
+# сравнение данных
+list_check_data = check_data_files(list_files)
 
-
-
-#
 

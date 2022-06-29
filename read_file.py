@@ -9,6 +9,13 @@ sys_alphanumeric_dict = {
     4 : 'BDS'
 }
 
+brdc_alphanumeric_dict = {
+    1 : 'n',
+    2 : 'g',
+    3 : 'i',
+    4 : 'f'
+}
+
 sys_numericfilename_dict = {
     1 : '_GN.',
     2 : '_RN.',
@@ -52,7 +59,7 @@ def line_str_to_num(line,data_num_block):
         else:
             data_num_block.append(str_to_num(str_num))
 
-def read_file(path, filename, heft = 0, n_sys = 2):
+def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):
         data_file = []          # массив блоков из файла
         data_full_block = []    # весь блок данных
@@ -71,7 +78,6 @@ def read_file(path, filename, heft = 0, n_sys = 2):
 
                     line = check_space(line, 1)
                     fl_start_block = True
-                    data_full_block.append(False)                    # сравнение
                     data_full_block.append(line[:3])                    # спутник
                     data_full_block.append(str_to_datetime(line[4:23])) # время
                     data_full_block.append(heft)                        # вес
@@ -86,7 +92,7 @@ def read_file(path, filename, heft = 0, n_sys = 2):
     if data_file:
         return data_file
 
-def creat_selection_file(path, station_heft_dict, n_sys = 2):
+def creat_selection_file(path = os.getcwd(), station_heft_dict = [], n_sys = 2):
     print('creat_selection_file ----')
     search_ext = sys_numericfilename_dict.get(n_sys)
     print(search_ext)
@@ -109,6 +115,22 @@ def creat_selection_file(path, station_heft_dict, n_sys = 2):
     if list_files:
         return list_files
 
+def check_duplicate_data(list_data = []):
+    arr_pop = []
+    for i, data_block1 in enumerate(list_data):
+        for j, data_block2 in enumerate(list_data):
+            if i != j \
+                and data_block1[1] == data_block2[1] \
+                and data_block1[0] == data_block2[0]:
+                    if data_block1[3] > data_block2[3]:
+                        arr_pop.append(j)
+                    else:
+                        arr_pop.append(i)
+
+    for i in reversed(arr_pop):
+        list_data.pop(i)
+    return list_data
+
 def check_data_files(list_files):
     print('check_data_files ----')
     list_check_data = list_files[0] # МАССИВ ПРОВЕРЕННЫХ
@@ -119,19 +141,31 @@ def check_data_files(list_files):
             if list_check_data != file_:    # не берем первый
                 for data_block2 in file_:
                     if data_block1[1] == data_block2[1] \
-                            and data_block1[2] == data_block2[2]:
+                            and data_block1[0] == data_block2[0]:
                         print('==========Нашел=============')
-                        print(data_block1[0], data_block1[1], data_block1[2], data_block1[3],
-                              data_block2[0], data_block2[1], data_block2[2], data_block2[3])
+                        print(data_block1[0], data_block1[1], data_block1[2],
+                              data_block2[0], data_block2[1], data_block2[2])
 
-                        if data_block1[4] == data_block2[4]:  # сравнение значений
+                        if data_block1[3] == data_block2[3]:  # сравнение значений
                             print('==========Ideal=============')
-                            data_block1[3] = data_block1[3] + data_block2[3]
+                            data_block1[2] = data_block1[2] + data_block2[2]
                             print(data_block1)
                         else:
                             print("NO ================")
                             list_check_data.append(data_block2)
 
     print(list_check_data)
+
+    # убираем дубликаты
+    list_check_data = check_duplicate_data(list_check_data)
+
     if list_check_data:
         return list_check_data
+
+def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001'):
+    ch_brdc = brdc_alphanumeric_dict.get(n_sys)
+    print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
+    f = open(path + '\\' + 'Brdc{0}0.{1}{2}'.format(day_year, str(year)[2:],ch_brdc), 'w')
+    for data_block in list_check_data:
+        print(data_block)
+    f.close()

@@ -7,23 +7,26 @@ path3 = 'C:\\Users\\vezvi\\PycharmProjects\\ProjectOleg\\Test_folder_brdc'
 # проверка в директории файлов и копирование в другую директорию
 import os
 import os.path
-from function import *
+from changing_files import *
 from db_connect import *
 from db_function import *
-from read_file import *
+from functions import *
+from dictionary import *
 
 # список расширений для проверки
 # генерация расширения вместе с требуемой датой
 dif_datetime = 0
-year, month, day, day_year, hour, hour_2 =  required_date(dif_datetime)
+year, month, day, day_year, hour, minute, sec =  required_date(dif_datetime)
 # for test
 day_year = 167
 hour_2 = '06'
 month = '06'
 day = 16
-print(year, month, day, day_year, hour, hour_2 )
+print(year, month, day, day_year, hour, '%02i' % hour )
 
-str_datetime_dy = str(year) + str(day_year) + hour_2
+date_ver = '010722'
+
+str_datetime_dy = str(year) + str(day_year) + '%02i' % hour
 print(str_datetime_dy)
 str_datetime = str(year) + '-' + str(month) + '-' + str(day)
 print(str_datetime)
@@ -58,7 +61,8 @@ for n_sys in [2]:
     list_check_data = check_data_files(list_files)
 
     # создание нав.файла
-    creat_nav_file(list_check_data, path3, n_sys, year, day_year)
+    brdc_datetime = datime_for_brdcfile(year, month, day, hour, minute, sec)
+    creat_nav_file(list_check_data, path3, n_sys, year, day_year,brdc_datetime, date_ver)
 
 
 

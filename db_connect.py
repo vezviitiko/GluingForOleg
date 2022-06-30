@@ -20,6 +20,7 @@ def read_db_config(filename='config.ini',section='postgresql'):
     return db
 
 def connect_to_db(path = os.getcwd(), filename='config.ini', section='postgresql'):
+
     try:
         print(path + '\\' + filename)
         if (os.path.exists(path + '\\' + filename)
@@ -29,13 +30,9 @@ def connect_to_db(path = os.getcwd(), filename='config.ini', section='postgresql
 
             return cnx
         else:
-            raise Exception('not found file cdb config')
+            raise Exception('not found file db config')
             exit(1)
     except:
         raise Exception('db not connected')
         exit(1)
-
-
-
-
 

@@ -77,6 +77,9 @@ def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
 
                 elif fl_start_block:
                     line_str_to_num(line, data_num_block)
+                    
+            data_full_block.append(data_num_block)
+            data_file.append(data_full_block)
 
     print(data_file)
     if data_file:

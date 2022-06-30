@@ -39,30 +39,41 @@ def str_to_num(str):
     return float(str)
 
 def line_str_to_num(line,data_num_block):
-    for str_num in line.split():
-        if len(str_num) > 20:
-            num_zn = str_num[18:].find('-')
-            str_num_1 = str_num[:18+num_zn]
-            data_num_block.append(str_to_num(str_num_1))
-            str_num_2 = str_num[18+num_zn:]
-            data_num_block.append(str_to_num(str_num_2))
-        else:
+    print('line_str_to_num   ')
+    for str_nums in line.split():
+        if len(str_nums) > 20:
+            str_num = ''
+            i = 0
+            while i < len(str_nums):
+                num_zn = str_nums[18+i:].find('-')
+                if num_zn < 0:
+                    num_zn = str_nums.rfind('-')
+                    str_num = str_nums[num_zn:]
+                    break
+                str_num = str_nums[:18+i + num_zn]
+                data_num_block.append(str_to_num(str_num))
+                i+=18+num_zn
             data_num_block.append(str_to_num(str_num))
+
+        else:
+            data_num_block.append(str_to_num(str_nums))
 
 def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):
-        data_file = []          # массив блоков из файла
-        data_full_block = []    # весь блок данных
-        data_num_block = []     # блок численных данных
+        data_file = []          #   массив блоков из файла
+        data_full_block = []    #   весь блок данных
+        data_num_block  = []    #   блок численных данных
         ch_file = sys_numeric_ch_file_dict.get(n_sys)
         print('ch_file=',ch_file)
         with open(path+'\\'+filename) as f:
             fl_start_block = False
             for line in f:
+                print(line)
                 if line[:1]==ch_file:
                     if fl_start_block:
                         data_full_block.append(data_num_block)
                         data_file.append(data_full_block)
+                        print(data_full_block)
                         data_full_block = []
                         data_num_block = []
 
@@ -72,12 +83,14 @@ def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
                     data_full_block.append(str_to_datetime(line[4:23])) # время
                     data_full_block.append(heft)                        # вес
 
+                    print('====',line[:23])
                     line = line.strip(line[:23])             # далее данные
+                    print('----',line)
                     line_str_to_num(line,data_num_block)
 
                 elif fl_start_block:
                     line_str_to_num(line, data_num_block)
-                    
+
             data_full_block.append(data_num_block)
             data_file.append(data_full_block)
 
@@ -156,6 +169,7 @@ def check_data_files(list_files):
         return list_check_data
 
 def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = ''):
+    print('     creat_nav_file')
     ch_brdc = brdc_alphanumeric_dict.get(n_sys)
     print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
     f = open(path + '\\' + 'Brdc{0}0.{1}{2}'.format(day_year, str(year)[2:],ch_brdc), 'w')

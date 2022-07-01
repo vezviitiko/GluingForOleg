@@ -58,39 +58,44 @@ def line_str_to_num(line,data_num_block):
         else:
             data_num_block.append(str_to_num(str_nums))
 
-def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
+def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):
         data_file = []          #   массив блоков из файла
         data_full_block = []    #   весь блок данных
-        data_num_block  = []    #   блок численных данных
+        data_num_block  = ''    #   строка численных данных
         ch_file = sys_numeric_ch_file_dict.get(n_sys)
         print('ch_file=',ch_file)
         with open(path+'\\'+filename) as f:
             fl_start_block = False
             for line in f:
-                print(line)
+                #print(line)
                 if line[:1]==ch_file:
                     if fl_start_block:
+                        data_num_block = data_num_block.replace('RRR', 'E')
                         data_full_block.append(data_num_block)
                         data_file.append(data_full_block)
                         print(data_full_block)
                         data_full_block = []
-                        data_num_block = []
+                        data_num_block = ''
 
                     line = check_space(line, 1)
                     fl_start_block = True
                     data_full_block.append(line[:3])                    # спутник
                     data_full_block.append(str_to_datetime(line[4:23])) # время
                     data_full_block.append(heft)                        # вес
+                    print(line[:23])
+                    data_num_block += line[23:]                         # данные
 
-                    print('====',line[:23])
-                    line = line.strip(line[:23])             # далее данные
-                    print('----',line)
-                    line_str_to_num(line,data_num_block)
+                    ##print('====',line[:23])
+                    #line = line.strip(line[:23])             # далее данные
+                    #print('----',line)
+                    #line_str_to_num(line,data_num_block)
 
                 elif fl_start_block:
-                    line_str_to_num(line, data_num_block)
+                    data_num_block += line[:]
+                    #line_str_to_num(line, data_num_block)
 
+            data_num_block = data_num_block.replace('E', 'D')
             data_full_block.append(data_num_block)
             data_file.append(data_full_block)
 
@@ -98,14 +103,14 @@ def read_file(path = os.getcwd(), filename = '', heft = 0, n_sys = 2):
     if data_file:
         return data_file
 
-def creat_selection_file(path = os.getcwd(), station_heft_dict = [], n_sys = 2):
+def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
     print('creat_selection_file ----')
     search_ext = sys_numericfilename_dict.get(n_sys)
     print(search_ext)
 
     list_files = []
     # cтруктура
-    #   = [['Name station', 'datatime', heft, [array]], [..],...]
+    #   = [['Name station', 'datatime', heft, str_num_data], [..],...]
     #
     if (os.path.exists(path) and os.path.isdir(path)):
         for filename in os.listdir(path):
@@ -113,6 +118,8 @@ def creat_selection_file(path = os.getcwd(), station_heft_dict = [], n_sys = 2):
                 print('file=',filename)
                 heft = station_heft_dict.get(filename[:4])
                 print('heft=', heft)
+                if heft is None:
+                    heft = 1
                 data = read_file(path, filename, heft, n_sys)
                 if data is not None:
                     list_files.append(data)
@@ -168,7 +175,7 @@ def check_data_files(list_files):
     if list_check_data:
         return list_check_data
 
-def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = ''):
+def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = '010122'):
     print('     creat_nav_file')
     ch_brdc = brdc_alphanumeric_dict.get(n_sys)
     print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
@@ -183,10 +190,5 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
         print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         print(data_block)
         f.write((data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' ')))
-        for i, elem in enumerate(data_block[3]):
-            if int(elem)>0:
-                f.write(' ' + str(elem))
-            else:
-                f.write(' ' + str(elem))
-            print(elem)
+        f.write(data_block[3])
     f.close()

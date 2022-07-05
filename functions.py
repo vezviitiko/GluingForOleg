@@ -23,6 +23,7 @@ def check_space(str, pos):
     return str
 
 def str_to_datetime(str):
+    print(str)
     year = check_space(str[:4],1)
     month = check_space(str[5:7], 0)
     day = check_space(str[8:10], 0)
@@ -58,6 +59,37 @@ def line_str_to_num(line,data_num_block):
         else:
             data_num_block.append(str_to_num(str_nums))
 
+def check_limit_sys(line, n_sys, num_line_start_block):
+    match n_sys:
+        case 1:
+            if num_line_start_block < 6:
+                return line
+            else:
+                return line[:23]+'\n'
+        case 2:
+            if num_line_start_block < 3:
+                return line
+            else:
+                return ''
+        case 3:
+            if num_line_start_block == 4:
+                if line.find('      ') > 0:
+                    line.replace('                  ', '0.000000000000D+00')
+                return line
+            else:
+                return line
+        case 4:
+            if num_line_start_block == 4:
+                if line.find('      ')>0:
+                    line.replace('                  ','0.000000000000D+00')
+                return line
+            elif num_line_start_block == 6:
+                return line[:23]+'\n'
+            else:
+                return line
+        case _:
+            return line
+
 def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):
         data_file = []          #   массив блоков из файла
@@ -65,32 +97,39 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
         data_num_block  = ''    #   строка численных данных
         ch_file = sys_numeric_ch_file_dict.get(n_sys)
         print('ch_file=',ch_file)
+        fl_start_file = False
         with open(path+'\\'+filename) as f:
             fl_start_block = False
+            num_line_start_block = 0
             for line in f:
-                #print(line)
-                if line[:1]==ch_file:
-                    if fl_start_block:
-                        data_num_block = data_num_block.replace('E', 'D')
-                        data_num_block = data_num_block.replace('e', 'D')
-                        data_full_block.append(data_num_block)
-                        data_file.append(data_full_block)
-                        print(data_full_block)
-                        data_full_block = []
-                        data_num_block = ''
+                if fl_start_file:
+                    print(line)
+                    if line[:1]==ch_file:
+                        if fl_start_block:
+                            data_num_block = data_num_block.replace('E', 'D')
+                            data_num_block = data_num_block.replace('e', 'D')
+                            data_full_block.append(data_num_block)
+                            data_file.append(data_full_block)
+                            print(data_full_block)
+                            data_full_block = []
+                            data_num_block = ''
+                            num_line_start_block = 0
 
-                    line = check_space(line, 1)
-                    fl_start_block = True
-                    data_full_block.append(line[:3])                    # спутник
-                    data_full_block.append(str_to_datetime(line[4:23])) # время
-                    data_full_block.append(heft)                        # вес
-                    print(line[:23])
-                    data_num_block += line[23:]                         # данные
+                        line = check_space(line, 1)
+                        fl_start_block = True
+                        data_full_block.append(line[:3])                    # спутник
+                        data_full_block.append(str_to_datetime(line[4:23])) # время
+                        data_full_block.append(heft)                        # вес
+                        print(line[:23])
+                        data_num_block += line[23:]                         # данные
 
-                elif fl_start_block:
-                    print(len(line), line)
-                    if line.find('999999999999') < 0:
-                        data_num_block += line
+                    elif fl_start_block:
+                        print(len(line), line)
+                        data_num_block += check_limit_sys(line, n_sys, num_line_start_block)
+                        num_line_start_block += 1
+
+                elif line.find('END OF HEADER')>0:
+                    fl_start_file = True
 
             data_num_block = data_num_block.replace('E', 'D')
             data_num_block = data_num_block.replace('e', 'D')

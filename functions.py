@@ -71,7 +71,8 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
                 #print(line)
                 if line[:1]==ch_file:
                     if fl_start_block:
-                        data_num_block = data_num_block.replace('RRR', 'E')
+                        data_num_block = data_num_block.replace('E', 'D')
+                        data_num_block = data_num_block.replace('e', 'D')
                         data_full_block.append(data_num_block)
                         data_file.append(data_full_block)
                         print(data_full_block)
@@ -86,16 +87,11 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
                     print(line[:23])
                     data_num_block += line[23:]                         # данные
 
-                    ##print('====',line[:23])
-                    #line = line.strip(line[:23])             # далее данные
-                    #print('----',line)
-                    #line_str_to_num(line,data_num_block)
-
                 elif fl_start_block:
                     data_num_block += line[:]
-                    #line_str_to_num(line, data_num_block)
 
             data_num_block = data_num_block.replace('E', 'D')
+            data_num_block = data_num_block.replace('e', 'D')
             data_full_block.append(data_num_block)
             data_file.append(data_full_block)
 
@@ -192,11 +188,11 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
          "GLUT  0.6053596735D-08 0.000000000D+00      0    0          TIME SYSTEM CORR\n" \
          "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
     f.write(s1)
-    
+
     # сортировка
     from operator import itemgetter
     list_check_data = sorted(list_check_data, key=lambda x:x[0])
-    
+
     for data_block in list_check_data:
         print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         print(data_block)

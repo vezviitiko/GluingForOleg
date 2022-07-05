@@ -192,6 +192,11 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
          "GLUT  0.6053596735D-08 0.000000000D+00      0    0          TIME SYSTEM CORR\n" \
          "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
     f.write(s1)
+    
+    # сортировка
+    from operator import itemgetter
+    list_check_data = sorted(list_check_data, key=lambda x:x[0])
+    
     for data_block in list_check_data:
         print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         print(data_block)

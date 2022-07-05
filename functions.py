@@ -37,25 +37,24 @@ def datime_for_brdcfile(year,month,day,hour,minute,sec):
     return str(str(year)[2:]+'%02i' % int(month)+'%02i' % int(day)+' %02i' % int(hour)+':%02i' % int(minute)+':%02i' % int(sec))
 
 def check_limit_sys(line, n_sys, num_line_start_block):
-    match n_sys:
-        case 1:
+    if n_sys == 1:
             if num_line_start_block < 6:
                 return line
             else:
                 return line[:23]+'\n'
-        case 2:
+    elif n_sys == 2:
             if num_line_start_block < 3:
                 return line
             else:
                 return ''
-        case 3:
+    elif n_sys == 3:
             if num_line_start_block == 4:
                 if line.find('      ') > 0:
                     line.replace('                  ', '0.000000000000D+00')
                 return line
             else:
                 return line
-        case 4:
+    elif n_sys == 3:
             if num_line_start_block == 4:
                 if line.find('      ')>0:
                     line.replace('                  ','0.000000000000D+00')
@@ -64,8 +63,8 @@ def check_limit_sys(line, n_sys, num_line_start_block):
                 return line[:23]+'\n'
             else:
                 return line
-        case _:
-            return line
+    else:
+        return line
 
 def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):

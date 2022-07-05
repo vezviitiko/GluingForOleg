@@ -17,19 +17,17 @@ def required_date(dif_datetime = 0):
     sec = now.second
     return year, month, day, day_year, hour, minute, sec
 
-def check_space(str, pos):
-    if str[pos]==' ':
-        str[pos]=0
-    return str
+def check_space(str):
+    return str.replace(' ', '0')
 
 def str_to_datetime(str):
     print(str)
-    year = check_space(str[:4],1)
-    month = check_space(str[5:7], 0)
-    day = check_space(str[8:10], 0)
-    hour = check_space(str[11:13], 0)
-    min = check_space(str[14:16], 0)
-    sec = check_space(str[17:19], 0)
+    year = check_space(str[:4])
+    month = check_space(str[5:7])
+    day = check_space(str[8:10])
+    hour = check_space(str[11:13])
+    min = check_space(str[14:16])
+    sec = check_space(str[17:19])
     datetime = year+'-'+month+'-'+day+' '+hour+':'+min+':'+sec
     return datetime
 
@@ -91,9 +89,9 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
                             data_num_block = ''
                             num_line_start_block = 0
 
-                        line = check_space(line, 1)
+                        #line = check_space(line)
                         fl_start_block = True
-                        data_full_block.append(line[:3])                    # спутник
+                        data_full_block.append(check_space(line[:3]))       # спутник
                         data_full_block.append(str_to_datetime(line[4:23])) # время
                         data_full_block.append(heft)                        # вес
                         print(line[:23])

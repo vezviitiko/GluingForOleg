@@ -88,7 +88,9 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
                     data_num_block += line[23:]                         # данные
 
                 elif fl_start_block:
-                    data_num_block += line[:]
+                    print(len(line), line)
+                    if line.find('999999999999') < 0:
+                        data_num_block += line
 
             data_num_block = data_num_block.replace('E', 'D')
             data_num_block = data_num_block.replace('e', 'D')
@@ -191,7 +193,7 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
 
     # сортировка
     from operator import itemgetter
-    list_check_data = sorted(list_check_data, key=lambda x:x[0])
+    list_check_data = sorted(list_check_data, key=lambda x:x[1])
 
     for data_block in list_check_data:
         print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))

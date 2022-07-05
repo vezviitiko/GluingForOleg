@@ -123,7 +123,7 @@ def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
                 data = read_file(path, filename, heft, n_sys)
                 if data is not None:
                     list_files.append(data)
-                print(list_files)
+                print('list_files = ', list_files)
 
     if list_files:
         return list_files
@@ -140,34 +140,40 @@ def check_duplicate_data(list_data = []):
                     else:
                         arr_pop.append(i)
 
+    print('arr_pop = ', arr_pop)
+    arr_pop = list(set(arr_pop)) # убираем дублируемые
+    print('arr_pop = ', arr_pop)
     for i in reversed(arr_pop):
         list_data.pop(i)
     return list_data
 
 def check_data_files(list_files):
     print('check_data_files ----')
-    list_check_data = list_files[0] # МАССИВ ПРОВЕРЕННЫХ
-    print(list_check_data)
+    list_check_data = []
 
-    for data_block1 in list_check_data:
-        for file_ in list_files:
-            if list_check_data != file_:    # не берем первый
-                for data_block2 in file_:
-                    if data_block1[1] == data_block2[1] \
-                            and data_block1[0] == data_block2[0]:
-                        print('==========Нашел=============')
-                        print(data_block1[0], data_block1[1], data_block1[2],
-                              data_block2[0], data_block2[1], data_block2[2])
+    for file_ in list_files:
+        for data_block_file_ in file_:
+            flag_check = False
+            for data_block1 in list_check_data:
+                if data_block1[1] == data_block_file_[1] \
+                            and data_block1[0] == data_block_file_[0]:
+                    flag_check = True
+                    print('==========Нашел=============')
+                    print(data_block1[0], data_block1[1], data_block1[2],
+                          data_block_file_[0], data_block_file_[1], data_block_file_[2])
+                    if data_block1[3] == data_block_file_[3]:  # сравнение значений
+                        print('==========Ideal=============')
+                        data_block1[2] = data_block1[2] + data_block_file_[2]
+                        print(data_block1)
+                    else:
+                        print("NO ================")
+                        list_check_data.append(data_block_file_)
+            if  flag_check == False:
+                print("ADD NEW DATA ================")
+                print(data_block_file_)
+                list_check_data.append(data_block_file_)
 
-                        if data_block1[3] == data_block2[3]:  # сравнение значений
-                            print('==========Ideal=============')
-                            data_block1[2] = data_block1[2] + data_block2[2]
-                            print(data_block1)
-                        else:
-                            print("NO ================")
-                            list_check_data.append(data_block2)
-
-    print(list_check_data)
+    print('list_check_data=',list_check_data)
 
     # убираем дубликаты
     list_check_data = check_duplicate_data(list_check_data)

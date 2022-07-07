@@ -172,15 +172,16 @@ def check_data_files2(list_files):
     for i in range(len(list_check_data)-1):
         for j in range(i+1, len(list_check_data)):
             if list_check_data[i][0] == list_check_data[j][0] \
-                and list_check_data[i][1] == list_check_data[j][1] \
-                    and (list_check_data[i][4] == False or list_check_data[j][4] == False):
+                and list_check_data[i][1] == list_check_data[j][1]:
+                    #and list_check_data[i][4] == False \
+                    #and list_check_data[j][4] == False:
                 print('==========Нашел=============')
                 print(list_check_data[i][0], list_check_data[i][1], list_check_data[i][2],
                       list_check_data[j][0], list_check_data[j][1], list_check_data[j][2])
                 if list_check_data[i][3] == list_check_data[j][3]:  # сравнение значений
                     print('==========Ideal=============')
                     list_check_data[i][2] = list_check_data[i][2] + list_check_data[j][2]
-                    list_check_data[j][4] = True
+                    #list_check_data[j][4] = True
                     print(list_check_data[i])
 
                 print('SIZE = ===', len(list_check_data))

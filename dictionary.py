@@ -8,7 +8,7 @@ sys_alphanumeric_dict = {
 
 sys_alphafullnumeric_dict = {
     1 : 'GPS              ',
-    2 : 'GLANASS          ',
+    2 : 'GLONASS          ',
     3 : 'GALILEO          ',
     4 : 'BAIDOU           '
 }

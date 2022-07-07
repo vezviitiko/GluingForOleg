@@ -145,11 +145,12 @@ def check_duplicate_data(list_data = []):
     arr_pop = []
     for i, data_block1 in enumerate(list_data):
         for j, data_block2 in enumerate(list_data[i+1:]):
-            if i != j \
-                and data_block1[1] == data_block2[1] \
+            if data_block1[1] == data_block2[1] \
                 and data_block1[0] == data_block2[0]:
-                    if data_block1[3] > data_block2[3]:
-                        arr_pop.append(j)
+                    print(data_block1[0], data_block1[1], data_block1[2], data_block2[2])
+                    if data_block1[2] >= data_block2[2]:
+                        arr_pop.append(i+1 + j)
+                        print(i+1 + j)
                     else:
                         arr_pop.append(i)
 
@@ -158,6 +159,7 @@ def check_duplicate_data(list_data = []):
     print('arr_pop = ', arr_pop)
     for i in reversed(arr_pop):
         list_data.pop(i)
+
     return list_data
 
 def check_data_files2(list_files):
@@ -183,7 +185,7 @@ def check_data_files2(list_files):
 
                 print('SIZE = ===', len(list_check_data))
 
-    print('list_check_data=', list_check_data)
+    #print('list_check_data=', list_check_data)
 
     # убираем дубликаты
     list_check_data = check_duplicate_data(list_check_data)
@@ -241,9 +243,10 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
          "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
     f.write(s1)
 
+
     # сортировка
     from operator import itemgetter
-    list_check_data = sorted(list_check_data, key=lambda x:x[1])
+    list_check_data = sorted(sorted(list_check_data, key=lambda x:x[0]), key=lambda x:x[1])
 
     for data_block in list_check_data:
         #print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))

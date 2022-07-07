@@ -58,11 +58,8 @@ for n_sys in [2]:
     list_files = creat_selection_file(path2, station_heft_dict, n_sys)
 
     # сравнение данных
-    list_check_data = check_data_files(list_files)
+    list_check_data = check_data_files2(list_files)
 
     # создание нав.файла
     brdc_datetime = datime_for_brdcfile(year, month, day, hour, minute, sec)
     creat_nav_file(list_check_data, path3, n_sys, year, day_year,brdc_datetime, date_ver)
-
-
-

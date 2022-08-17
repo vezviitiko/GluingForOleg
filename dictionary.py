@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+#coding=UTF-8
+__autor__ = 'KomissarovAV'
 
 sys_alphanumeric_dict = {
     1 : 'GPS',

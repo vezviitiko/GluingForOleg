@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+#coding=UTF-8
 __autor__ = 'KomissarovAV'
 
 import psycopg2

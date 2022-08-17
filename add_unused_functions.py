@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+#coding=UTF-8
+__autor__ = 'KomissarovAV'
+
 def str_to_num(str):
     return float(str)
 

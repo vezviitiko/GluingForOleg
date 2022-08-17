@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+#coding=UTF-8
 __autor__ = 'KomissarovAV'
 
 import os
@@ -83,7 +85,7 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
                             data_num_block = data_num_block.replace('E', 'D')
                             data_num_block = data_num_block.replace('e', 'D')
                             data_full_block.append(data_num_block)
-                            data_full_block.append(False)
+                            data_full_block.append(filename[0:4])
                             data_file.append(data_full_block)
                             #print(data_full_block)
                             data_full_block = []
@@ -109,7 +111,7 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
             data_num_block = data_num_block.replace('E', 'D')
             data_num_block = data_num_block.replace('e', 'D')
             data_full_block.append(data_num_block)
-            data_full_block.append(False)
+            data_full_block.append(filename[0:4])
             data_file.append(data_full_block)
 
     print(data_file)
@@ -129,7 +131,7 @@ def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
         for filename in os.listdir(path):
             if filename.find(search_ext)>0:
                 print('file=',filename)
-                heft = station_heft_dict.get(filename[:4])
+                heft = station_heft_dict.get(filename[:4], None)
                 print('heft=', heft)
                 if heft is None:
                     heft = 1
@@ -141,7 +143,7 @@ def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
     if list_files:
         return list_files
 
-def check_duplicate_data(list_data = []):
+def check_duplicate_data(list_data):
     arr_pop = []
     for i, data_block1 in enumerate(list_data):
         for j, data_block2 in enumerate(list_data[i+1:]):
@@ -154,9 +156,9 @@ def check_duplicate_data(list_data = []):
                     else:
                         arr_pop.append(i)
 
-    print('arr_pop = ', arr_pop)
+    #print('arr_pop = ', arr_pop)
     arr_pop = list(set(arr_pop)) # убираем дублируемые
-    print('arr_pop = ', arr_pop)
+    #print('arr_pop = ', arr_pop)
     for i in reversed(arr_pop):
         list_data.pop(i)
 
@@ -176,12 +178,12 @@ def check_data_files2(list_files):
                     #and list_check_data[i][4] == False \
                     #and list_check_data[j][4] == False:
                 print('==========Нашел=============')
-                print(list_check_data[i][0], list_check_data[i][1], list_check_data[i][2],
-                      list_check_data[j][0], list_check_data[j][1], list_check_data[j][2])
+                print(list_check_data[i][0], list_check_data[i][1], list_check_data[i][2],list_check_data[i][4],
+                      list_check_data[j][0], list_check_data[j][1], list_check_data[j][2],list_check_data[j][4])
                 if list_check_data[i][3] == list_check_data[j][3]:  # сравнение значений
                     print('==========Ideal=============')
                     list_check_data[i][2] = list_check_data[i][2] + list_check_data[j][2]
-                    #list_check_data[j][4] = True
+                    list_check_data[i][4] = list_check_data[i][4] + ' , ' + list_check_data[j][4]
                     print(list_check_data[i])
 
                 print('SIZE = ===', len(list_check_data))
@@ -194,7 +196,7 @@ def check_data_files2(list_files):
     if list_check_data:
         return list_check_data
 
-def check_data_files(list_files):
+def check_data_files(list_files, f_log):
     print('check_data_files ----')
     list_check_data = []
 
@@ -227,12 +229,12 @@ def check_data_files(list_files):
     print('list_check_data=',list_check_data)
 
     # убираем дубликаты
-    list_check_data = check_duplicate_data(list_check_data)
+    list_check_data = check_duplicate_data(list_check_data, f_log)
 
     if list_check_data:
         return list_check_data
 
-def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = '010122'):
+def creat_nav_file(list_check_data, f_log, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = '010122'):
     print('     creat_nav_file')
     ch_brdc = brdc_alphanumeric_dict.get(n_sys)
     print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
@@ -244,7 +246,6 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
          "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
     f.write(s1)
 
-
     # сортировка
     from operator import itemgetter
     list_check_data = sorted(sorted(list_check_data, key=lambda x:x[0]), key=lambda x:x[1])
@@ -252,6 +253,11 @@ def creat_nav_file(list_check_data, path = os.getcwd(), n_sys = 1, year = '2022'
     for data_block in list_check_data:
         #print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         #print(data_block)
-        f.write((data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' ')))
+        f.write(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         f.write(data_block[3])
+
+        f_log.write(data_block[0] +' '
+                    + str(data_block[1]).replace('-', ' ').replace(':', ' ')
+                    + ' : ' + data_block[4] + '\n')
+        f_log.flush()
     f.close()

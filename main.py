@@ -58,13 +58,13 @@ print(fileExt)
 # создаем список весов по списку скачанных файлов
 
 # подключение к БД
-#cnx = connect_to_db()
+cnx = connect_to_db()
 
 #for n_sys in [1,2,3,4]:
 for n_sys in [2]:
     # получение словаря весов станций
-    station_heft_dict = {}
-    #station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime, n_sys)
+    #station_heft_dict = {}
+    station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime, n_sys)
 
     # чтение файлов
     list_files = creat_selection_file(path2, station_heft_dict, n_sys)

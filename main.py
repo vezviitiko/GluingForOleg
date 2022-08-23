@@ -25,8 +25,8 @@ year, month, day, day_year, hour, minute, sec =  required_date(dif_datetime)
 # for test
 day_year = 167
 hour_2 = '06'
-month = '06'
-day = 16
+month = '07'
+day = '07'
 print(year, month, day, day_year, hour, '%02i' % hour )
 
 date_ver = '010722'
@@ -67,7 +67,7 @@ for n_sys in [2]:
     station_heft_dict = get_dict_station_heft(cnx, path2, str_datetime, n_sys)
 
     # чтение файлов
-    list_files = creat_selection_file(path2, station_heft_dict, n_sys)
+    list_files = creat_selection_file(day, month, year, path2, station_heft_dict, n_sys)
 
     # сравнение данных
     list_check_data = check_data_files2(list_files)

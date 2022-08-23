@@ -11,7 +11,7 @@ def required_date(dif_datetime = 0):
     now = now - datetime.timedelta(dif_datetime)
     year = now.year
     month = '%02i' % now.month
-    day = now.day
+    day = '%02i' % now.day
     day_year = now.strftime('%j')
     hour = now.hour
     hour_2 = '%02i' % hour
@@ -66,7 +66,7 @@ def check_limit_sys(line, n_sys, num_line_start_block):
     else:
         return line
 
-def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
+def read_file(day, month, year, path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
     if (os.path.exists(path+'\\'+filename) and os.path.isfile(path+'\\'+filename)):
         data_file = []          #   массив блоков из файла
         data_full_block = []    #   весь блок данных
@@ -79,29 +79,33 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
             num_line_start_block = 0
             for line in f:
                 if fl_start_file:
+
                     #print(line)
                     if line[:1]==ch_file:
                         if fl_start_block:
                             data_num_block = data_num_block.replace('E', 'D')
                             data_num_block = data_num_block.replace('e', 'D')
                             data_full_block.append(data_num_block)
-                            data_full_block.append(filename[0:4])
+                            data_full_block.append(filename[0:4])  # название станции для отчетов
                             data_file.append(data_full_block)
-                            #print(data_full_block)
                             data_full_block = []
                             data_num_block = ''
                             num_line_start_block = 0
 
-                        #line = check_space(line)
+                        # проверка данных только за требуемые сутки
+                        if (str(year)+' '+str(month)+' '+str(day) != line[4:14]):
+                            data_full_block = []
+                            data_num_block = ''
+                            fl_start_block = False
+                            continue
+
                         fl_start_block = True
                         data_full_block.append(check_space(line[:3]))       # спутник
                         data_full_block.append(str_to_datetime(line[4:23])) # время
                         data_full_block.append(heft)                        # вес
-                        #print(line[:23])
                         data_num_block += line[23:]                         # данные
 
                     elif fl_start_block:
-                        #print(len(line), line)
                         data_num_block += check_limit_sys(line, n_sys, num_line_start_block)
                         num_line_start_block += 1
 
@@ -118,7 +122,7 @@ def read_file(path = os.getcwd(), filename = '', heft = 1, n_sys = 2):
     if data_file:
         return data_file
 
-def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
+def creat_selection_file(day, month, year, path, station_heft_dict = {}, n_sys = 2):
     print('creat_selection_file ----')
     search_ext = sys_numericfilename_dict.get(n_sys)
     print(search_ext)
@@ -133,9 +137,9 @@ def creat_selection_file(path = os.getcwd(), station_heft_dict = {}, n_sys = 2):
                 print('file=',filename)
                 heft = station_heft_dict.get(filename[:4], None)
                 print('heft=', heft)
-                if heft is None:
+                if heft is None or heft == 0:
                     heft = 1
-                data = read_file(path, filename, heft, n_sys)
+                data = read_file(day, month, year, path, filename, heft, n_sys)
                 if data is not None:
                     list_files.append(data)
                 print('list_files = ', list_files)
@@ -156,9 +160,7 @@ def check_duplicate_data(list_data):
                     else:
                         arr_pop.append(i)
 
-    #print('arr_pop = ', arr_pop)
     arr_pop = list(set(arr_pop)) # убираем дублируемые
-    #print('arr_pop = ', arr_pop)
     for i in reversed(arr_pop):
         list_data.pop(i)
 
@@ -183,53 +185,13 @@ def check_data_files2(list_files):
                 if list_check_data[i][3] == list_check_data[j][3]:  # сравнение значений
                     print('==========Ideal=============')
                     list_check_data[i][2] = list_check_data[i][2] + list_check_data[j][2]
+                    # добавление списка станций для отчета
                     list_check_data[i][4] = list_check_data[i][4] + ' , ' + list_check_data[j][4]
                     print(list_check_data[i])
-
-                print('SIZE = ===', len(list_check_data))
-
-    #print('list_check_data=', list_check_data)
+                #print('SIZE = ===', len(list_check_data))
 
     # убираем дубликаты
     list_check_data = check_duplicate_data(list_check_data)
-
-    if list_check_data:
-        return list_check_data
-
-def check_data_files(list_files, f_log):
-    print('check_data_files ----')
-    list_check_data = []
-
-    for file_ in list_files:
-        for data_block_file_ in file_:
-            flag_check = False
-            print(0, data_block_file_[1])
-            for data_block1 in list_check_data:
-                print(1)
-                if data_block1[1] == data_block_file_[1] \
-                            and data_block1[0] == data_block_file_[0]:
-                    flag_check = True
-                    print('==========Нашел=============')
-                    print(data_block1[0], data_block1[1], data_block1[2],
-                          data_block_file_[0], data_block_file_[1], data_block_file_[2])
-                    if data_block1[3] == data_block_file_[3]:  # сравнение значений
-                        print('==========Ideal=============')
-                        data_block1[2] = data_block1[2] + data_block_file_[2]
-                        print(data_block1)
-                    else:
-                        print("NO ================")
-                        list_check_data.append(data_block_file_)
-                    print('SIZE = ===', len(list_check_data))
-                    print(2)
-            if  flag_check == False:
-                print("ADD NEW DATA ================")
-                print(data_block_file_)
-                list_check_data.append(data_block_file_)
-
-    print('list_check_data=',list_check_data)
-
-    # убираем дубликаты
-    list_check_data = check_duplicate_data(list_check_data, f_log)
 
     if list_check_data:
         return list_check_data
@@ -251,8 +213,6 @@ def creat_nav_file(list_check_data, f_log, path = os.getcwd(), n_sys = 1, year =
     list_check_data = sorted(sorted(list_check_data, key=lambda x:x[0]), key=lambda x:x[1])
 
     for data_block in list_check_data:
-        #print(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
-        #print(data_block)
         f.write(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
         f.write(data_block[3])
 

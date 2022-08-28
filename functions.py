@@ -133,7 +133,7 @@ def creat_selection_file(day, month, year, path, station_heft_dict = {}, n_sys =
     #
     if (os.path.exists(path) and os.path.isdir(path)):
         for filename in os.listdir(path):
-            if filename.find(search_ext)>0:
+            if filename.find(search_ext)>0 or filename.find('_MN.')>0:
                 print('file=',filename)
                 heft = station_heft_dict.get(filename[:4], None)
                 print('heft=', heft)

@@ -40,8 +40,10 @@ def check_limit_sys(line, n_sys, num_line_start_block):
     if n_sys == 1:
             if num_line_start_block < 6:
                 return line
-            else:
+            elif num_line_start_block == 6:
                 return line[:23]+'\n'
+            else:
+                return ''
     elif n_sys == 2:
             if num_line_start_block < 3:
                 return line
@@ -50,14 +52,14 @@ def check_limit_sys(line, n_sys, num_line_start_block):
     elif n_sys == 3:
             if num_line_start_block == 4:
                 if line.find('      ') > 0:
-                    line.replace('                  ', '0.000000000000D+00')
+                    line = line.replace('                 ', ' 0.000000000000D+00')
                 return line
             else:
                 return line
     elif n_sys == 4:
             if num_line_start_block == 4:
                 if line.find('      ')>0:
-                    line.replace('                  ','0.000000000000D+00')
+                    line = line.replace('                  ',' 0.000000000000D+00')
                 return line
             elif num_line_start_block == 6:
                 return line[:23]+'\n'
@@ -135,6 +137,7 @@ def creat_selection_file(day, month, year, path, station_heft_dict = {}, n_sys =
     if (os.path.exists(path) and os.path.isdir(path)):
         for filename in os.listdir(path):
             if filename.find(search_ext)>0 or filename.find('_MN.')>0:
+            #if filename.find(search_ext)>0:
                 print('file=',filename)
                 heft = station_heft_dict.get(filename[:4], None)
                 print('heft=', heft)
@@ -170,9 +173,10 @@ def check_duplicate_data(list_data):
 def check_data_files2(list_files):
     print('check_data_files2 ----')
     list_check_data = []
-    for file_ in list_files:
-        for data_block in file_:
-            list_check_data.append(data_block)
+    if list_files is not None:
+        for file_ in list_files:
+            for data_block in file_:
+                list_check_data.append(data_block)
 
     for i in range(len(list_check_data)-1):
         for j in range(i+1, len(list_check_data)):
@@ -198,27 +202,30 @@ def check_data_files2(list_files):
         return list_check_data
 
 def creat_nav_file(list_check_data, f_log, path = os.getcwd(), n_sys = 1, year = '2022', day_year = '001', brdc_datetime = '', date_ver = '010122'):
-    print('     creat_nav_file')
-    ch_brdc = brdc_alphanumeric_dict.get(n_sys)
-    print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
-    f = open(path + '\\' + 'Brdc{0}0.{1}{2}'.format(day_year, str(year)[2:],ch_brdc), 'w')
+    if list_check_data is not None:
+        print('     creat_nav_file')
+        ch_brdc = brdc_alphanumeric_dict.get(n_sys)
+        print('Brdc{0}0.{1}{2}'.format(str(day_year), str(year)[2:], ch_brdc))
+        f = open(path + '\\' + 'Brdc{0}0.{1}{2}'.format(day_year, str(year)[2:],ch_brdc), 'w')
 
-    s1 = "     3.02            N:GNSS NAV DATA    R: {0}RINEX VERSION / TYPE\n" \
-         "Версия от {1}                          {2}UTCPGM / RUN BY / DATE\n" \
-         "GLUT  0.6053596735D-08 0.000000000D+00      0    0          TIME SYSTEM CORR\n" \
-         "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
-    f.write(s1)
+        s1 = "     3.02            N:GNSS NAV DATA    R: {0}RINEX VERSION / TYPE\n" \
+             "Версия от {1}                          {2}UTCPGM / RUN BY / DATE\n" \
+             "GLUT  0.6053596735D-08 0.000000000D+00      0    0          TIME SYSTEM CORR\n" \
+             "                                                            END OF HEADER\n".format( sys_alphafullnumeric_dict.get(n_sys), date_ver, brdc_datetime)
+        f.write(s1)
 
-    # сортировка
-    from operator import itemgetter
-    list_check_data = sorted(sorted(list_check_data, key=lambda x:x[0]), key=lambda x:x[1])
+        # сортировка
+        from operator import itemgetter
+        list_check_data = sorted(sorted(list_check_data, key=lambda x:x[0]), key=lambda x:x[1])
 
-    for data_block in list_check_data:
-        f.write(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
-        f.write(data_block[3])
+        for data_block in list_check_data:
+            f.write(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
+            f.write(data_block[3])
 
-        f_log.write(data_block[0] +' '
-                    + str(data_block[1]).replace('-', ' ').replace(':', ' ')
-                    + ' : ' + data_block[4] + '\n')
-        f_log.flush()
-    f.close()
+            f_log.write(data_block[0] +' '
+                        + str(data_block[1]).replace('-', ' ').replace(':', ' ')
+                        + ' : ' + data_block[4] + '\n')
+            f_log.flush()
+        f.close()
+    else:
+        print("list_check_data is NONE")

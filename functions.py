@@ -111,12 +111,13 @@ def read_file(day, month, year, path = os.getcwd(), filename = '', heft = 1, n_s
 
                 elif line.find('END OF HEADER')>0:
                     fl_start_file = True
-
-            data_num_block = data_num_block.replace('E', 'D')
-            data_num_block = data_num_block.replace('e', 'D')
-            data_full_block.append(data_num_block)
-            data_full_block.append(filename[0:4])
-            data_file.append(data_full_block)
+            
+            if fl_start_block:
+                data_num_block = data_num_block.replace('E', 'D')
+                data_num_block = data_num_block.replace('e', 'D')
+                data_full_block.append(data_num_block)
+                data_full_block.append(filename[0:4])
+                data_file.append(data_full_block)
 
     print(data_file)
     if data_file:

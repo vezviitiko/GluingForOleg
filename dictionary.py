@@ -19,7 +19,7 @@ sys_alphafullnumeric_dict = {
 brdc_alphanumeric_dict = {
     1 : 'n',
     2 : 'g',
-    3 : 'i',
+    3 : 'l',
     4 : 'f'
 }
 

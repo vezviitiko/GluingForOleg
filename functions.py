@@ -52,7 +52,7 @@ def check_limit_sys(line, n_sys, num_line_start_block):
     elif n_sys == 3:
             if num_line_start_block == 4:
                 if line.find('      ') > 0:
-                    line = line.replace('                  ', ' 0.000000000000D+00')
+                    line = line.replace('                   ', ' 0.000000000000D+00')
                 elif len(line)<75:
                     line = line[:-1] +' 0.000000000000D+00\n'
                 return line
@@ -61,7 +61,7 @@ def check_limit_sys(line, n_sys, num_line_start_block):
     elif n_sys == 4:
             if num_line_start_block == 4:
                 if line.find('      ')>0:
-                    line = line.replace('                  ',' 0.000000000000D+00')
+                    line = line.replace('                   ', ' 0.000000000000D+00')
                 elif len(line)<75:
                     line = line[:-1] +' 0.000000000000D+00\n'
                 return line

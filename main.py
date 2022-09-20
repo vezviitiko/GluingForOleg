@@ -35,6 +35,7 @@ name_log_file = '/logs_{0}'.format(day_year)
 f_log = create_log_file(path_log, name_log_file)
 f_log.write('Начало работы программы {0}:{1}\n\n'.format(hour, minute))
 time_start = time.time()
+datetime_start = datetime.datetime.now()
 f_log.flush()
 
 str_datetime_dy = str(year) + str(day_year) + '%02i' % hour
@@ -74,7 +75,10 @@ for n_sys in [2]:
 
     # создание нав.файла
     brdc_datetime = datime_for_brdcfile(year, month, day, hour, minute, sec)
-    creat_nav_file(list_check_data, f_log, path3, n_sys, year, day_year,brdc_datetime, date_ver)
+    
+    filename_conn_to_db = 'config2.ini'
+
+    creat_nav_file(datetime_start, list_check_data, f_log, path3, n_sys, year, day_year,brdc_datetime, date_ver, filename_conn_to_db)
 
 f_log.write('\nОкончание работы программы {0}:{1}\n'.format(hour, minute))
 f_log.write('Программа работала {0} c\n'.format(time.time() - time_start))

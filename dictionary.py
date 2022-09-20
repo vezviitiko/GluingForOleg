@@ -36,3 +36,11 @@ sys_numeric_ch_file_dict = {
     3 : 'E',
     4 : 'C'
 }
+
+name_table_log_bd = {
+    1 : 'log_stations_gps',
+    2 : 'log_stations_glo',
+    3 : 'log_stations_gal',
+    4 : 'log_stations_bds'
+}
+

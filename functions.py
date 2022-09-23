@@ -237,7 +237,7 @@ def creat_nav_file(datetime_log, list_check_data, f_log, path = os.getcwd(), n_s
 
         cnx_ = connect_to_db(filename_conn_to_db)
         cursor_ = cnx.cursor()
-        gnss_table = name_table_log_bd(n_sys)
+        gnss_table = name_table_log_bd.get(n_sys)
 
         for data_block in list_check_data:
             f.write(data_block[0] +' '+ str(data_block[1]).replace('-', ' ').replace(':', ' '))
@@ -248,7 +248,7 @@ def creat_nav_file(datetime_log, list_check_data, f_log, path = os.getcwd(), n_s
                         + ' : ' + data_block[4] + '\n')
             f_log.flush()
 
-            loging_to_db(cnx_, gnss_table, datetime_log, data_block[1], data_block[0], data_block[4])
+            loging_to_db(cnx_, gnss_table, datetime_log, data_block[1], data_block[0], "{ " + data_block[4] + " }")
 
         f.close()
     else:
